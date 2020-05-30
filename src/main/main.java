@@ -30,7 +30,7 @@ private void UserInput(boolean exit) {
         if (exit) return;
         Scanner input = new Scanner(System.in);
         while (true) {
-                System.out.println("Введите: 'p' - чтобы вывести массив; 'r' - чтобы заполнить массив рандомными домами, 'a' - добавить дом, 'd' - удалить дом с индексом, 'f' - чтобы сохранить массив в файл,'b' - чтобы сохранить массив в бинарный файл,'g'- чтобы считать массив домов из файла, 'k' - чтобы считать массив домов из бинарного файла,'e' -  чтобы выйти с программы");
+                System.out.println("Введите: \n'a' - чтобы добавить дом,\n'r' - чтобы заполнить массив рандомными домами,\n'p' - чтобы вывести массив,\n'h' - чтобы вывести список квартир на определённом этаже,\n'q' - чтобы вывести список этажей, где квартиры размещены в порядке убывания,\n'v' - чтобы вывести cписок квартир в порядке возростания площади,\n'd' - чтобы удалить дом с индексом,\n'f' - чтобы сохранить массив в файл,\n'b' - чтобы сохранить массив в бинарный файл,\n'g' - чтобы считать массив домов из файла,\n'k' - чтобы считать массив домов из бинарного файла,\n'e' - чтобы выйти с программы");
                 String in = input.nextLine();
                 if (in.charAt(0) == 'p') {
                         for (int i = 0; i < house.size(); i++) {
@@ -65,11 +65,17 @@ private void UserInput(boolean exit) {
                         System.out.println("Введите имя файла:");
                         String path = input.nextLine();
                         readFromFile(house,path);
-                }else if (in.charAt(0) == 'k'){
+                } else if (in.charAt(0) == 'k'){
                         System.out.println("Введите имя бинарного файла:");
                         String path = input.nextLine();
                         readFromFileBinary(house,path);
-                }else if (in.charAt(0) == 'e') {
+                } else if (in.charAt(0) == 'v') {
+                        VariantD(true);
+                } else if (in.charAt(0) == 'q') {
+                        VariantE();
+                } else if (in.charAt(0) == 'h') {
+                        VariantF();
+                } else if (in.charAt(0) == 'e') {
                         exit = true;
                         break;
                 }
@@ -95,14 +101,88 @@ private void Floor() {
         System.out.println("Input second num span floor  = ");
         int b = scanner.nextInt();
         for (int i = 0; i < house.size(); i++) {
-        if (a <= house.get(i).getFloor() && house.get(i).getFloor() <= b && house.get(i).getRoom() == room2)
-        System.out.println(house.get(i).toString());
+                if (a <= house.get(i).getFloor() && house.get(i).getFloor() <= b && house.get(i).getRoom() == room2)
+                System.out.println(house.get(i).toString());
+        }
+}
+
+private void VariantD(boolean output) {
+        if (output) {
+                System.out.println("Список квартир в порядке возростания площади:");
+        }
+        for (int i = 0; i < house.size(); i++) {
+                if (house.get(i) != null) {
+                        for (int j = i+1; j < house.size(); j++) {
+                                if (house.get(i).getSpace() > house.get(j).getSpace()) {
+                                        House buff = house.get(i);
+                                        house.set(i, house.get(j));
+                                        house.set(j, buff);
+                                } else if (house.get(i).getSpace() == house.get(j).getSpace()) {
+                                        if (house.get(i).getFloor() > house.get(j).getFloor()) {
+                                                House buff = house.get(i);
+                                                house.set(i, house.get(j));
+                                                house.set(j, buff);
+                                        }
+                                }
+                        }
+                }
+        }
+        if (output) {
+                for (int i = 0; i < house.size(); i++) {
+                        System.out.println(house.get(i).toString());
+                }
+        }
+}
+
+private void VariantE() {
+        int maxFloor = 0;
+        for (int i = 0; i < house.size(); i++) {
+                if (house.get(i).getFloor() > maxFloor) {
+                        maxFloor = house.get(i).getFloor()+1;
+                }
+        }
+        int[] floors = new int[maxFloor];
+        int[] amount = new int[maxFloor];
+        for (int i = 0; i < floors.length; i++) {
+                floors[i] = i+1;
+                amount[i] = 0;
+        }
+        for (int i = 0; i < house.size()-1; i++) {
+                amount[house.get(i+1).getFloor()]++;
+        }
+        for (int i = 0; i < amount.length; i++) {
+                for (int j = 0; j < amount.length; j++) {
+                        if (amount[i] > amount[j]) {
+                                int buff = amount[i];
+                                int buff_ = floors[i];
+                                amount[i] = amount[j];
+                                floors[i] = floors[j];
+                                amount[j] = buff;
+                                floors[j] = buff_;
+                        }
+                }
+        }
+        for (int i = 0; i < amount.length; i++) {
+                System.out.println("Floor: "+floors[i]+" houses: "+amount[i]);
+        }
+}
+
+private void VariantF() {
+        System.out.println("Введите этаж: ");
+        int floor = scanner.nextInt();
+        for (int i = 0; i < house.size(); i++) {
+                if (house.get(i) != null) {
+                        if (house.get(i).getFloor() == floor) {
+                                System.out.println(house.get(i).toString());
+                        }
+                }
         }
 }
 
 private void space() {
         System.out.println("Input space = ");
         float space1 = scanner.nextFloat();
+        VariantD(false);
         for (int i = 0; i < house.size(); i++) {
         if (house.get(i).getSpace()>space1) {
         System.out.println(house.get(i).toString());
